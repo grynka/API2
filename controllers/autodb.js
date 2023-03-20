@@ -1,6 +1,12 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
+//const mariadb = require("mariadb");
 
-const pull = null
+const pool = `mariadb.createPool({
+  host: process.env.SERVER,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+})`;
 
 const manufactures = async (req, res) => {
   const connection = await pool.getConnection();
