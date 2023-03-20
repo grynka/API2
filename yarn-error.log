@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js start
+  C:\Program Files\nodejs\node.exe C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add mariabd
 
 PATH: 
   C:\Python311\Scripts\;C:\Python311\;C:\Python310\Scripts\;C:\Python310\;C:\Program Files (x86)\Razer\ChromaBroadcast\bin;C:\Program Files\Razer\ChromaBroadcast\bin;C:\ProgramData\Oracle\Java\javapath;C:\Program Files\WinRAR;C:\Program Files\Internet Explorer;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files\OpenVPN\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\Common Files\Acronis\SnapAPI\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Common Files\Apple\Internet Services\;C:\WINDOWS\system32\config\systemprofile\AppData\Local\Microsoft\WindowsApps;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Android\SDK\platform-tools;C:\Android\SDK\tools;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Microsoft SQL Server Migration Assistant for MySQL\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\Users\Игорь\AppData\Local\Microsoft\WindowsApps;C:\Users\Игорь\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Игорь\AppData\Local\GitHubDesktop\bin;C:\Android\SDK\platform-tools;C:\Android\SDK\tools;C:\Users\Игорь\AppData\Roaming\npm;C:\Users\Игорь\AppData\Local\Programs\Azure Data Studio\bin
@@ -14,12 +14,17 @@ Platform:
   win32 x64
 
 Trace: 
-  SyntaxError: C:\My Documents\GitHub\API2\package.json: Unexpected token } in JSON at position 396
-      at JSON.parse (<anonymous>)
-      at C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:1629:59
-      at Generator.next (<anonymous>)
-      at step (C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:310:30)
-      at C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:321:13
+  Error: https://registry.npmjs.org/mariabd: Not found
+      at Request.params.callback [as _callback] (C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66145:18)
+      at Request.self.callback (C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140890:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141862:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (C:\Users\Игорь\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141784:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {
@@ -32,8 +37,8 @@ npm manifest:
     "license": "free",
     "private": true,
     "scripts": {
-      "start": "cross-env NODE_ENV=production node ./server.js",
-      "start:dev": "cross-env NODE_ENV=development nodemon ./server.js",
+      "start": "node ./server.js",
+      "start:dev": "nodemon ./server.js"
     },
     "dependencies": {
       "@sendgrid/mail": "^7.7.0",
