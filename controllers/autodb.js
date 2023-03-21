@@ -68,10 +68,19 @@ const search = async (req, res) => {
   const { query } = req.params;
   const connection = await pool.getConnection();
   const data = await connection.query(
-    `SELECT m.description, a.OENbr FROM article_oe a 
-      JOIN manufacturers m ON m.id=a.manufacturerId 
-      WHERE a.datasupplierarticlenumber= ${query}`
+    `SELECT DISTINCT a.OENbr AS oem, m.description AS brand, i.NormalizedDescription AS description FROM article_oe a 
+    JOIN manufacturers m ON m.id=a.manufacturerId 
+    JOIN articles i ON i.DataSupplierArticleNumber=a.datasupplierarticlenumber
+    WHERE a.OENbr='${query}'`
   );
+
+  let unic = data.reduce((accumulator, currentValue) => {
+    if (accumulator.every(item => !(item.oem === currentValue.oem && item.brand === currentValue.brand && item.description !== currentValue.description)))
+     accumulator.push(currentValue);
+    return accumulator;
+  }, []);
+  
+  console.log(unic)
   res.json(data);
 };
 
