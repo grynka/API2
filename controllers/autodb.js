@@ -74,6 +74,10 @@ const search = async (req, res) => {
     WHERE a.OENbr='${query}'`
   );
 
+  if (data.length === 0) {
+    console.log("is empty")
+  }
+
   let unic = data.reduce((accumulator, currentValue) => {
     if (accumulator.every(item => !(item.oem === currentValue.oem && item.brand === currentValue.brand && item.description !== currentValue.description)))
      accumulator.push(currentValue);
