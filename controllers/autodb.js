@@ -75,7 +75,9 @@ const search = async (req, res) => {
   );
 
   if (data.length === 0) {
-    console.log("is empty")
+    const data = await connection.query(`SELECT DISTINCT s.description, c.PartsDataSupplierArticleNumber FROM article_cross c
+JOIN suppliers s ON s.id=c.SupplierId
+WHERE c.PartsDataSupplierArticleNumber='${query}'`)
   }
 
   let unic = data.reduce((accumulator, currentValue) => {
