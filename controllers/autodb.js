@@ -67,7 +67,7 @@ res.json(Array.from(acc.values()));
 const search = async (req, res) => {
   const { query } = req.params;
   const connection = await pool.getConnection();
-  const data = await connection.query(
+  let data = await connection.query(
     `SELECT DISTINCT a.OENbr AS oem, m.description AS brand, i.NormalizedDescription AS description FROM article_oe a 
     JOIN manufacturers m ON m.id=a.manufacturerId 
     JOIN articles i ON i.DataSupplierArticleNumber=a.datasupplierarticlenumber
@@ -75,9 +75,11 @@ const search = async (req, res) => {
   );
 
   if (data.length === 0) {
-    const data = await connection.query(`SELECT DISTINCT s.description, c.PartsDataSupplierArticleNumber FROM article_cross c
-JOIN suppliers s ON s.id=c.SupplierId
-WHERE c.PartsDataSupplierArticleNumber='${query}'`)
+    data = await connection.query(`SELECT DISTINCT c.PartsDataSupplierArticleNumber AS oem, s.description AS brand, i.NormalizedDescription AS description FROM article_cross c
+    JOIN suppliers s ON s.id=c.SupplierId
+    JOIN article_oe a ON a.OENbr=c.OENbr
+    JOIN articles i ON i.DataSupplierArticleNumber=a.datasupplierarticlenumber
+    WHERE c.PartsDataSupplierArticleNumber='${query}'`)
   }
 
   let unic = data.reduce((accumulator, currentValue) => {
@@ -87,7 +89,7 @@ WHERE c.PartsDataSupplierArticleNumber='${query}'`)
   }, []);
   
   console.log(unic)
-  res.json(data);
+  res.json(unic);
 };
 
 module.exports = {
