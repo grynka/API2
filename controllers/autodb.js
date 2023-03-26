@@ -92,9 +92,23 @@ const search = async (req, res) => {
   res.json(unic);
 };
 
+const trees = async (req, res) => {
+  const { car_id, cat_id } = req.params;
+  const connection = await pool.getConnection();
+  const data = await connection.query(
+    `SELECT id, description, 
+    IF(EXISTS(SELECT * FROM passanger_car_trees t1 
+    INNER JOIN passanger_car_trees t2 ON t1.parentid=t2.id WHERE t2.parentid="${car_id}" AND t1.passangercarid="${cat_id}" LIMIT 1), 1, 0) AS havechild 
+    FROM passanger_car_trees WHERE passangercarid="${car_id}" AND parentId="${cat_id}"
+    ORDER BY havechild`
+  );
+  res.json(data);
+}
+
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
   models: ctrlWrapper(models),
   type: ctrlWrapper(type),
   search: ctrlWrapper(search),
+  trees: ctrlWrapper(trees),
 };
