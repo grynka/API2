@@ -14,4 +14,6 @@ router.get("/trees/:car_id/:cat_id", autobdOperations.trees);
 
 router.get("/brands", autobdOperations.brands);
 
+router.get("/model/:id", autobdOperations.model);
+
 module.exports = router;

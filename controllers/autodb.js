@@ -1,6 +1,8 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
 const { Brand } = require("../models/manufacture")
+const { Model } = require("../models/model")
+
 
 
 const pool = mariadb.createPool({
@@ -90,7 +92,6 @@ const search = async (req, res) => {
     return accumulator;
   }, []);
   
-  console.log(unic)
   res.json(unic);
 };
 
@@ -108,15 +109,23 @@ const trees = async (req, res) => {
 };
 
 const brands = async (req, res, next) => {
-  console.log(Brand)
   try {
     const brand = await Brand.find().where({ispassengercar: "True"}).where({iscommercialvehicle: "False"}).where({isengine: "False"});
     res.status(200).json( brand );
   } catch (error) {
     next(error);
   }
-}
+};
 
+const model = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const model = await Model.find().where({manufacturerid: id});
+    res.status(200).json( model );
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
@@ -125,4 +134,5 @@ module.exports = {
   search: ctrlWrapper(search),
   trees: ctrlWrapper(trees),
   brands: ctrlWrapper(brands),
+  model: ctrlWrapper(model),
 };
