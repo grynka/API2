@@ -12,4 +12,6 @@ router.get("/search/:query", autobdOperations.search);
 
 router.get("/trees/:car_id/:cat_id", autobdOperations.trees);
 
+router.get("/brands", autobdOperations.brands);
+
 module.exports = router;
