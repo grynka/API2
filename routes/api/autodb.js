@@ -6,7 +6,7 @@ router.get("/type/:id", autobdOperations.type);
 
 router.get("/search/:query", autobdOperations.search);
 
-router.get("/trees/:car_id/:cat_id", autobdOperations.trees);
+router.get("/tree/:car_id/:cat_id", autobdOperations.tree);
 
 router.get("/brands", autobdOperations.brands);
 

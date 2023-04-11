@@ -3,6 +3,7 @@ const mariadb = require("mariadb");
 const { Brand } = require("../models/manufacture");
 const { Model } = require("../models/model");
 const { Type } = require("../models/type");
+const { Tree } = require("../models/trees");
 
 const pool = mariadb.createPool({
   host: process.env.SERVER,
@@ -180,12 +181,26 @@ const type = async (req, res, next) => {
   }
 };
 
+const tree =  async (req, res, next) => {
+    const { car_id } = req.params;
+    const { cat_id } = req.params;
+
+    try {
+const trees = await Tree.find({passangercarid: Number(car_id), parentid: Number(cat_id)})
+console.log(trees)
+res.status(200).json(trees)
+}
+catch {
+throw err;
+}
+}
+
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
   models: ctrlWrapper(models),
   types: ctrlWrapper(types),
   search: ctrlWrapper(search),
-  trees: ctrlWrapper(trees),
+  tree: ctrlWrapper(tree),
   brands: ctrlWrapper(brands),
   model: ctrlWrapper(model),
   type: ctrlWrapper(type),
