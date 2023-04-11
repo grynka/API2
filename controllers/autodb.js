@@ -1,8 +1,8 @@
 const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
-const { Brand } = require("../models/manufacture")
-const { Model } = require("../models/model")
-const { Type } = require("../models/type")
+const { Brand } = require("../models/manufacture");
+const { Model } = require("../models/model");
+const { Type } = require("../models/type");
 
 const pool = mariadb.createPool({
   host: process.env.SERVER,
@@ -46,9 +46,9 @@ const types = async (req, res) => {
     AND modelid = ${id} AND ispassengercar = 'True'`
   );
 
- const acc = new Map();
+  const acc = new Map();
 
- data
+  data
     .map(({ id, name, displaytitle, displayvalue }) => {
       const container = {};
       container["id"] = id;
@@ -64,7 +64,7 @@ const types = async (req, res) => {
       options.push(elem.options.pop());
     });
 
-res.json(Array.from(acc.values()));
+  res.json(Array.from(acc.values()));
 };
 
 const search = async (req, res) => {
@@ -78,19 +78,29 @@ const search = async (req, res) => {
   );
 
   if (data.length === 0) {
-    data = await connection.query(`SELECT DISTINCT c.PartsDataSupplierArticleNumber AS oem, s.description AS brand, i.NormalizedDescription AS description FROM article_cross c
+    data =
+      await connection.query(`SELECT DISTINCT c.PartsDataSupplierArticleNumber AS oem, s.description AS brand, i.NormalizedDescription AS description FROM article_cross c
     JOIN suppliers s ON s.id=c.SupplierId
     JOIN article_oe a ON a.OENbr=c.OENbr
     JOIN articles i ON i.DataSupplierArticleNumber=a.datasupplierarticlenumber
-    WHERE c.PartsDataSupplierArticleNumber='${query}'`)
+    WHERE c.PartsDataSupplierArticleNumber='${query}'`);
   }
 
   let unic = data.reduce((accumulator, currentValue) => {
-    if (accumulator.every(item => !(item.oem === currentValue.oem && item.brand === currentValue.brand && item.description !== currentValue.description)))
-     accumulator.push(currentValue);
+    if (
+      accumulator.every(
+        (item) =>
+          !(
+            item.oem === currentValue.oem &&
+            item.brand === currentValue.brand &&
+            item.description !== currentValue.description
+          )
+      )
+    )
+      accumulator.push(currentValue);
     return accumulator;
   }, []);
-  
+
   res.json(unic);
 };
 
@@ -109,8 +119,11 @@ const trees = async (req, res) => {
 
 const brands = async (req, res, next) => {
   try {
-    const brand = await Brand.find().where({ispassengercar: "True"}).where({iscommercialvehicle: "False"}).where({isengine: "False"});
-    res.status(200).json( brand );
+    const brand = await Brand.find()
+      .where({ ispassengercar: "True" })
+      .where({ iscommercialvehicle: "False" })
+      .where({ isengine: "False" });
+    res.status(200).json(brand);
   } catch (error) {
     next(error);
   }
@@ -119,8 +132,8 @@ const brands = async (req, res, next) => {
 const model = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const model = await Model.find().where({manufacturerid: id});
-    res.status(200).json( model );
+    const model = await Model.find().where({ manufacturerid: id });
+    res.status(200).json(model);
   } catch (error) {
     next(error);
   }
@@ -130,41 +143,38 @@ const type = async (req, res, next) => {
   const { id } = req.params;
   try {
     const type = await Type.aggregate([
-      { $match: { modelid: id, canbedisplayed:  'True' } },
-      { $lookup: {
-          from: 'passanger_car_attributes',
-          localField: 'id',
-          foreignField: 'passangercarid',
-          as: 'attributes'
-        }
+      { $match: { modelid: id, canbedisplayed: "True" } },
+      {
+        $lookup: {
+          from: "passanger_car_attributes",
+          localField: "id",
+          foreignField: "passangercarid",
+          as: "attributes",
+        },
       },
-      { $project: {
+      {
+        $project: {
           id: 1,
-          name: '$description',
-          displaytitle: '$attributes.displaytitle',
-          displayvalue: '$attributes.displayvalue'
-        }
+          name: "$description",
+          displaytitle: "$attributes.displaytitle",
+          displayvalue: "$attributes.displayvalue",
+        },
+      },
+    ]);
+
+    const types = type.map(({ id, name, displaytitle, displayvalue }) => {
+      const container = {};
+      container["id"] = id;
+      container["description"] = name;
+      let result = [];
+      for (let i = 0; i < displaytitle.length; i++) {
+        result.push({ [displaytitle[i]]: displayvalue[i] });
+        container["options"] = result;
       }
-    ])
+      return container;
+    });
 
-   const types = type.map(({ id, name, displaytitle, displayvalue }) => {
-    const container = {};
-    container["id"] = id;
-    container["description"] = name;
-    let result = []
-    for (let i = 0; i < displaytitle.length; i++) {
-          let obj = {};
-        //  obj.displaytitle = displaytitle[i];
-         // obj.displayvalue = displayvalue[i];
-          result.push({[displaytitle[i]]: displayvalue[i]});
-    container["options"] = result;
-          
-    }
-    return container
-  }
-  )
-
-  res.status(200).json( types );
+    res.status(200).json(types);
   } catch (error) {
     next(error);
   }
@@ -179,5 +189,4 @@ module.exports = {
   brands: ctrlWrapper(brands),
   model: ctrlWrapper(model),
   type: ctrlWrapper(type),
-
 };
