@@ -2,8 +2,7 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 const mariadb = require("mariadb");
 const { Brand } = require("../models/manufacture")
 const { Model } = require("../models/model")
-
-
+const { Type } = require("../models/type")
 
 const pool = mariadb.createPool({
   host: process.env.SERVER,
@@ -36,7 +35,7 @@ const models = async (req, res) => {
   res.json(data);
 };
 
-const type = async (req, res) => {
+const types = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.getConnection();
   const data = await connection.query(
@@ -127,12 +126,58 @@ const model = async (req, res, next) => {
   }
 };
 
+const type = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const type = await Type.aggregate([
+      { $match: { modelid: id, canbedisplayed:  'True' } },
+      { $lookup: {
+          from: 'passanger_car_attributes',
+          localField: 'id',
+          foreignField: 'passangercarid',
+          as: 'attributes'
+        }
+      },
+      { $project: {
+          id: 1,
+          name: '$description',
+          displaytitle: '$attributes.displaytitle',
+          displayvalue: '$attributes.displayvalue'
+        }
+      }
+    ])
+
+   const types = type.map(({ id, name, displaytitle, displayvalue }) => {
+    const container = {};
+    container["id"] = id;
+    container["description"] = name;
+    let result = []
+    for (let i = 0; i < displaytitle.length; i++) {
+          let obj = {};
+        //  obj.displaytitle = displaytitle[i];
+         // obj.displayvalue = displayvalue[i];
+          result.push({[displaytitle[i]]: displayvalue[i]});
+    container["options"] = result;
+          
+    }
+    return container
+  }
+  )
+
+  res.status(200).json( types );
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
   models: ctrlWrapper(models),
-  type: ctrlWrapper(type),
+  types: ctrlWrapper(types),
   search: ctrlWrapper(search),
   trees: ctrlWrapper(trees),
   brands: ctrlWrapper(brands),
   model: ctrlWrapper(model),
+  type: ctrlWrapper(type),
+
 };
