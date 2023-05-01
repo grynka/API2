@@ -8,13 +8,15 @@ const { Tree } = require("../models/trees");
 const pool = mariadb.createPool({
   host: process.env.SERVER,
   user: process.env.USER,
-  password: process.env.PASSWORD,
+  port: process.env.PORT,
   database: process.env.DATABASE,
+  connectionLimit: 100,
 });
+
 
 const manufactures = async (req, res) => {
   const connection = await pool.getConnection();
-  const data = await connection.query(`SELECT id, description name 
+  const data = await connection.query(`SELECT id, description 
     FROM manufacturers
     WHERE canbedisplayed = 'True' 
     AND ispassengercar = 'True' 
@@ -27,7 +29,7 @@ const models = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.getConnection();
   const data = await connection.query(
-    `SELECT id, description name, constructioninterval
+    `SELECT id, description , constructioninterval
     FROM models
     WHERE canbedisplayed = 'True'
     AND manufacturerid = ${id}
@@ -40,7 +42,7 @@ const types = async (req, res) => {
   const { id } = req.params;
   const connection = await pool.getConnection();
   const data = await connection.query(
-    `SELECT id, description name, a.displaytitle ,  a.displayvalue
+    `SELECT id, description, a.displaytitle ,  a.displayvalue
     FROM passanger_cars pc 
     JOIN passanger_car_attributes a on pc.id = a.passangercarid
     WHERE canbedisplayed = 'True'
@@ -50,10 +52,10 @@ const types = async (req, res) => {
   const acc = new Map();
 
   data
-    .map(({ id, name, displaytitle, displayvalue }) => {
+    .map(({ id, description, displaytitle, displayvalue }) => {
       const container = {};
       container["id"] = id;
-      container["name"] = name;
+      container["description"] = description;
       container["options"] = [{ [displaytitle]: displayvalue }];
       return container;
     })
@@ -199,6 +201,7 @@ module.exports = {
   manufactures: ctrlWrapper(manufactures),
   models: ctrlWrapper(models),
   types: ctrlWrapper(types),
+  trees: ctrlWrapper(trees),
   search: ctrlWrapper(search),
   tree: ctrlWrapper(tree),
   brands: ctrlWrapper(brands),
