@@ -20,4 +20,6 @@ router.get("/brands", autobdOperations.brands);
 
 router.get("/model/:id", autobdOperations.model);
 
+router.post("/addseller", autobdOperations.addSeller);
+
 module.exports = router;

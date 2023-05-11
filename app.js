@@ -4,6 +4,7 @@ const cors = require('cors')
 require("dotenv").config()
 const autodbRouter = require('./routes/api/autodb')
 const authRouter = require('./routes/api/auth')
+const npRouter = require("./routes/api/np");
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use(express.static("public"))
 
 app.use('/api/autodb', autodbRouter)
 app.use("/api/auth", authRouter)
+app.use("/api/np", npRouter);
 
 
 app.use((req, res) => {

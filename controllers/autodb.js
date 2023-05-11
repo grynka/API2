@@ -14,6 +14,18 @@ const pool = mariadb.createPool({
 });
 
 
+const addSeller = async (req, res) => {
+  
+  const connection = await pool.getConnection();
+  const { name, uid } = req.body;
+  await connection.query(
+    `INSERT INTO seller (name, uid)
+VALUES('${name}', ${uid})`
+  );
+  res.sendStatus(200);
+};
+
+
 const manufactures = async (req, res) => {
   const connection = await pool.getConnection();
   const data = await connection.query(`SELECT id, description 
@@ -207,4 +219,5 @@ module.exports = {
   brands: ctrlWrapper(brands),
   model: ctrlWrapper(model),
   type: ctrlWrapper(type),
+  addSeller: ctrlWrapper(addSeller),
 };
