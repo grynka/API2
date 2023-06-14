@@ -13,9 +13,7 @@ const pool = mariadb.createPool({
   connectionLimit: 100,
 });
 
-
 const addSeller = async (req, res) => {
-  
   const connection = await pool.getConnection();
   const { name, uid } = req.body;
   await connection.query(
@@ -25,6 +23,28 @@ VALUES('${name}', ${uid})`
   res.sendStatus(200);
 };
 
+const register = async (req, res) => {
+  const connection = await pool.getConnection();
+  const { email, password, username } = req.body;
+  try {
+    const user = await connection.query(
+      "INSERT INTO users (username, email, password) VALUES(?, ?, ?)",
+      [username, email, password]
+    );
+    res.status(200).json({ message: "Пользователь успешно зарегистрирован" });
+  } catch (error) {
+    console.error(error);
+    console.log(error.code);
+    if (error.code === 'ER_DUP_ENTRY') {
+      res
+        .status(500)
+        .json({ message: "Email вже використовується" });
+    }
+    else  res
+        .status(500)
+        .json({ message: "Произошла ошибка при регистрации пользователя" });
+  }
+};
 
 const manufactures = async (req, res) => {
   const connection = await pool.getConnection();
@@ -195,19 +215,21 @@ const type = async (req, res, next) => {
   }
 };
 
-const tree =  async (req, res, next) => {
-    const { car_id } = req.params;
-    const { cat_id } = req.params;
+const tree = async (req, res, next) => {
+  const { car_id } = req.params;
+  const { cat_id } = req.params;
 
-    try {
-const trees = await Tree.find({passangercarid: Number(car_id), parentid: Number(cat_id)})
-console.log(trees)
-res.status(200).json(trees)
-}
-catch {
-throw err;
-}
-}
+  try {
+    const trees = await Tree.find({
+      passangercarid: Number(car_id),
+      parentid: Number(cat_id),
+    });
+    console.log(trees);
+    res.status(200).json(trees);
+  } catch {
+    throw err;
+  }
+};
 
 module.exports = {
   manufactures: ctrlWrapper(manufactures),
@@ -220,4 +242,5 @@ module.exports = {
   model: ctrlWrapper(model),
   type: ctrlWrapper(type),
   addSeller: ctrlWrapper(addSeller),
+  register: ctrlWrapper(register),
 };

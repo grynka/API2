@@ -22,4 +22,7 @@ router.get("/model/:id", autobdOperations.model);
 
 router.post("/addseller", autobdOperations.addSeller);
 
+router.post("/register", autobdOperations.register);
+
+
 module.exports = router;
